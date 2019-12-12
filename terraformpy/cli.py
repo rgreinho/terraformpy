@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import imp
+import importlib.util
 import json
 import os
 import sys
@@ -40,7 +40,9 @@ def main():
     # all we need to do is import our files
     # the nature of resource declaration will register all of the objects for us to compile
     for filename in to_process:
-        imp.load_source(filename[:-6], filename)
+        spec = importlib.util.spec_from_file_location(filename[:-6], filename)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
 
     # now 'compile' everything that was registered, and write it out the tf.json file
     print("terraformpy - Writing main.tf.json")

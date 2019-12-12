@@ -181,8 +181,7 @@ def run_sphinx(session):
 
 
 def run_black(session, check=False):
-    opts = []
+    opts = ["."]
     if check:
-        opts.append("--check")
+        opts.insert(0, "--check")
     session.run("black", *opts)
-

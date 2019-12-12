@@ -1,0 +1,6 @@
+black
+codecov
+pytest
+pytest-cov
+twine==1.13.0
+

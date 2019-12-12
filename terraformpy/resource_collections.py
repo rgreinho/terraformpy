@@ -1,4 +1,6 @@
 """
+Represents the `resource_collection` package.
+
 Copyright 2019 NerdWallet
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +17,15 @@ limitations under the License.
 """
 
 import six
-from schematics.exceptions import MockCreationError
 from schematics.models import Model
 
 from terraformpy.helpers import relative_file as _relative_file
 
 
 class ResourceCollection(Model):
-    """ResourceCollection is a specialized subclass of the schematics Model object that aims to keep the feel of the
+    """Specialized subclass of the schematics Model object.
+
+    ResourceCollection is a specialized subclass of the schematics Model object that aims to keep the feel of the
     TFObject while providing full compatibility as a schematics Model.
 
     Unlike a model where you provide the data as a dict, you provide data as keyword args just like TFObject.
@@ -85,20 +88,26 @@ class ResourceCollection(Model):
         self.create_resources()
 
     def relative_file(self, filename):
+        """Load a relative file path."""
         return _relative_file(filename, _caller_depth=2)
 
     def create_resources(self):
+        """Create resources."""
         raise NotImplementedError
 
     def finalize_resources(self):
-        """This is called right before we compile everything.  It gives the collection a chance to generate any final
+        """
+        Define a Dummy method.
+
+        This is called right before we compile everything.  It gives the collection a chance to generate any final
         resources prior to the compilation occuring.
         """
-        pass
 
 
-class Variant(object):
-    """When used as a context manager it provides the ability for ResourceCollection's to vary their inputs based on a
+class Variant:
+    """Allow to use variants of a TFObject.
+
+    When used as a context manager it provides the ability for ResourceCollection's to vary their inputs based on a
     symbolc string name that allows you to define a resource collection for multiple environments where most of the
     inputs are shared, with only a few differences.
 

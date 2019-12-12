@@ -1,4 +1,6 @@
 """
+Represent the CLI.
+
 Copyright 2019 NerdWallet
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,11 +21,11 @@ import json
 import os
 import sys
 
-from terraformpy import compile
+from terraformpy import compile  # pylint: disable=redefined-builtin
 
 
 def main():
-    """Compile *.tf.py files and run Terraform"""
+    """Compile *.tf.py files and run Terraform."""
     to_process = [ent for ent in os.listdir(os.getcwd()) if ent.endswith(".tf.py")]
 
     if len(to_process) == 0:

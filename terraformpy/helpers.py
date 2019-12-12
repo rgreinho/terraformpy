@@ -1,4 +1,6 @@
 """
+Represents the `helpers` package.
+
 Copyright 2019 NerdWallet
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +21,10 @@ import os
 
 
 def relative_file(filename, _caller_depth=1):
-    """Given a filename that is relative to the caller of this function this will return a string to be used in
+    r"""
+    Load a relative file.
+
+    Given a filename that is relative to the caller of this function this will return a string to be used in
     resource definitions where you need to load a file.
 
     Given that Terraform's path.module will always point to the main.tf.json path and we need to retrieve files from
@@ -48,6 +53,7 @@ def relative_file(filename, _caller_depth=1):
 
 
 def relative_path(path, _caller_depth=1):
+    """Return a relative file path."""
     caller = inspect.stack()[_caller_depth]
     return "${{path.module}}/{0}".format(
         os.path.relpath(os.path.join(os.path.dirname(caller[1]), path))

@@ -20,9 +20,10 @@
 .ropeproject
 .settings
 .uwsgi-reload
+.nox/
+htmlcov/
 /.vscode/
 /build/
 /dist/
 /docs/_build/
 /venv/
-node_modules/*

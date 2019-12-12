@@ -1,4 +1,6 @@
 """
+Represents Terraform "objects".
+
 Copyright 2019 NerdWallet
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +27,27 @@ from schematics.types import compound
 
 from .resource_collections import Variant
 
+# pylint: skip-file
+"""
+Note(rgreinho):
+Ignoring the following errors for now as fixing them could have deeper implications.
+
+************* Module terraformpy.objects
+terraformpy/objects.py:69:15: E1101: Instance of 'DuplicateKey' has no '_hash' member (no-member)
+terraformpy/objects.py:72:53: E1101: Instance of 'DuplicateKey' has no '_hash' member (no-member)
+terraformpy/objects.py:76:19: E1101: Instance of 'DuplicateKey' has no '_hash' member (no-member)
+terraformpy/objects.py:81:19: E1101: Instance of 'DuplicateKey' has no '_hash' member (no-member)
+terraformpy/objects.py:86:19: E1101: Instance of 'DuplicateKey' has no '_hash' member (no-member)
+terraformpy/objects.py:91:19: E1101: Instance of 'DuplicateKey' has no '_hash' member (no-member)
+terraformpy/objects.py:358:12: W0212: Access to a protected member _frozen of a client class (protected-access)
+terraformpy/objects.py:361:12: W0212: Access to a protected member _frozen of a client class (protected-access)
+terraformpy/objects.py:400:8: W0201: Attribute '_previous_provider' defined outside __init__
+    (attribute-defined-outside-init)
+"""
+
 
 def recursive_update(dest, source):
-    """Like dict.update, but recursive"""
+    """Like dict.update, but recursive."""
     for key, val in six.iteritems(source):
         if isinstance(val, collections.Mapping):
             recurse = recursive_update(dest.get(key, {}), val)
@@ -38,7 +58,10 @@ def recursive_update(dest, source):
 
 
 class DuplicateKey(str):
-    """DuplicateKey provides a native string (str) replacement that can be used as a
+    """
+    Native string (str) replacement, serializing out to JSON while maintaining key duplicity.
+
+    DuplicateKey provides a native string (str) replacement that can be used as a
     dictionary key that will serialize out to JSON and maintain the duplicity.
 
     This is needed because the JSON representation of HCL requires duplicate keys for
@@ -88,9 +111,7 @@ class DuplicateKey(str):
 
 
 class OrderedDict(compound.DictType):
-    """
-    A schematic DictType that preserves key insertion order
-    """
+    """A schematic DictType that preserves key insertion order."""
 
     def __init__(self, *args, **kwargs):
         super(OrderedDict, self).__init__(*args, **kwargs)
@@ -115,7 +136,9 @@ class OrderedDict(compound.DictType):
         return data
 
 
-class TFObject(object):
+class TFObject:
+    """Base Terraform Object."""
+
     _instances = None
     _frozen = False
 
@@ -134,6 +157,8 @@ class TFObject(object):
 
     @classmethod
     def reset(cls):
+        """Reset instance registry."""
+
         def recursive_reset(cls):
             cls._instances = None
             for klass in cls.__subclasses__():
@@ -144,6 +169,7 @@ class TFObject(object):
 
     @classmethod
     def compile(cls):
+        """Compile TFObjects into their Terraform equivalent."""
         TFObject._frozen = True
 
         def recursive_compile(cls):
@@ -178,11 +204,12 @@ class Terraform(TFObject):
         self._values.update(kwargs)
 
     def build(self):
+        """Build a Terraform configuration object."""
         return {"terraform": self._values}
 
 
 class NamedObject(TFObject):
-    """Named objects are the Terraform definitions that only have a single name component (i.e. variable or output)"""
+    """Terraform definitions that only have a single name component (i.e. variable or output)."""
 
     # When recursively compiling, the "type" of object that is written out to the terraform definition needs to point to
     # the top-most subclass of TFobject.  For example, if you create a subclass of Resource named MyResource any
@@ -191,7 +218,9 @@ class NamedObject(TFObject):
     TF_TYPE = None
 
     def __init__(self, _name, _values=None, **kwargs):
-        """When creating a TF Object you can supply _values if you want to directly influence the values of the object,
+        """Initialize a `NamedObject`.
+
+        When creating a TF Object you can supply _values if you want to directly influence the values of the object,
         like when you're creating security group rules and need to specify `self`
         """
         assert self.TF_TYPE is not None, (
@@ -217,7 +246,7 @@ class NamedObject(TFObject):
             self.__dict__[name] = value
 
     def __getattr__(self, name):
-        """This is here as a safety so that you cannot generate hard to debug .tf.json files"""
+        """Safety so that you cannot generate hard to debug .tf.json files."""
         if not TFObject._frozen and name in self._values:
             return self._values[name]
         raise AttributeError(
@@ -236,6 +265,7 @@ class NamedObject(TFObject):
         return not self.__eq__(other)
 
     def build(self):
+        """Build a `NamedObject`."""
         result = {self.TF_TYPE: {self._name: self._values}}
         return result
 
@@ -272,8 +302,7 @@ class TypedObjectAttr(str):
     def _name_with_index(name, item):
         if item is None:
             return name
-        else:
-            return "{0}.{1}".format(name, item)
+        return "{0}.{1}".format(name, item)
 
     def __getitem__(self, item):
         return TypedObjectAttr(
@@ -317,15 +346,18 @@ class TypedObject(NamedObject):
 
     @property
     def terraform_name(self):
+        """Return the TErraform name."""
         return ".".join([self._type, self._name])
 
     def interpolated(self, name):
-        """If you reference an attr on a TFObject that was provided as a value you will always get back the python object
+        """Interpolate values.
+
+        If you reference an attr on a TFObject that was provided as a value you will always get back the python object
         instead of the Terraform interpolation string.  If you want the interpolation string this can be used to get it.
         If you don't do this then you can end up without the implicit dependency and can have failures due to ordering.
 
         Example:
-
+        -------
         .. code-block:: python
 
             role = Resource(
@@ -338,6 +370,7 @@ class TypedObject(NamedObject):
                 role=role.interpolated('name'),
                 ...
             )
+
         """
         try:
             TFObject._frozen = True
@@ -389,6 +422,7 @@ class Provider(NamedObject):
         Provider.CURRENT_PROVIDER = self._previous_provider
 
     def as_provider(self):
+        """Return an alias."""
         return ".".join([self._name, self._values["alias"]])
 
     # override build to support duplicate key values
@@ -398,7 +432,7 @@ class Provider(NamedObject):
 
 
 class Variable(NamedObject):
-    """Represents a Terraform variable
+    """Represents a Terraform variable.
 
     You can reference the interpolation syntax for a Variable instance by simply using it as a string.
 
@@ -418,19 +452,19 @@ class Variable(NamedObject):
 
 
 class Output(NamedObject):
-    """Represents a Terraform output"""
+    """Represents a Terraform output."""
 
     TF_TYPE = "output"
 
 
 class Module(NamedObject):
-    """Represents a Terraform module"""
+    """Represents a Terraform module."""
 
     TF_TYPE = "module"
 
 
 class Data(TypedObject):
-    """Represents a Terraform data source"""
+    """Represents a Terraform data source."""
 
     TF_TYPE = "data"
 
@@ -440,6 +474,6 @@ class Data(TypedObject):
 
 
 class Resource(TypedObject):
-    """Represents a Terraform resource"""
+    """Represents a Terraform resource."""
 
     TF_TYPE = "resource"

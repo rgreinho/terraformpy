@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "terraformpy"
+version = "1.2.1"
+description = "A library and command line tool to supercharge your Terraform configs with the power of Python."
+authors = [
+  "Evan Borgstrom <eborgstrom@nerdwallet.com>",
+  "Rémy Greinhofer <remy@greinho.fr>",
+  ]
+license = "Apache-2.0"
+readme = "README.rst"
+homepage = "https://github.com/NerdWalletOSS/terraformpy"
+repository = "https://github.com/NerdWalletOSS/terraformpy"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: Apache Software License",
+  "Natural Language :: English",
+  "Programming Language :: Python",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Pre-processors",
+  "Topic :: System :: Systems Administration",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+schematics = "=2.1.0"
+six = "=1.12.0"
+
+[tool.poetry.dev-dependencies]
+black = "^19.10b0"
+codecov = "^2.0"
+pytest = "^5.3"
+pytest-cov = "^2.8"
+
+[tool.poetry.scripts]
+terraformpy = 'terraformpy.cli:main'
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

@@ -176,8 +176,7 @@ def run_pytest_integrations(session):
 
 
 def run_sphinx(session):
-    pass
-    # session.run("python", "setup.py", "build_sphinx")
+    session.run("python", "setup.py", "build_sphinx")
 
 
 def run_black(session, check=False):

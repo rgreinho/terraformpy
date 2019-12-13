@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Add extra pytest plugins.
 * Remove Python 2 support. The new minimum required version is now `3.7`.
 * Format the Changelog according to the Keep A Changelog specification.
+* Use a `.github` folder to store .github configuration files
+  * issues and PR templates
+  * label definitions
+  * stale bot configuration
+  * contributing guidelines
+* Generate the documentation using Sphinx and the aiohttp theme
 
 ## [1.2.1]
 

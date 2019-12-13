@@ -3,7 +3,7 @@
 .. |pypi| image:: https://img.shields.io/pypi/v/terraformpy?color=blue
    :target: https://pypi.org/project/terraformpy
 
-.. |versions| image:: https://img.shields.io/badge/python-2.7%20%7C%203.5%20%7C%203.6%20%7C%203.7%20%7C%203.8-blue
+.. |versions| image:: https://img.shields.io/badge/python-3.7%20%7C%203.8-blue
    :target: https://pypi.org/project/terraformpy
 
 .. |format| image:: https://img.shields.io/pypi/format/terraformpy?color=blue
@@ -95,7 +95,8 @@ The ``terraformpy`` name space provides a number of classes that map directly to
     )
 
     Resource(
-        'aws_instance', 'example',
+        'aws_instance',
+        'example',
         ami='ami-2757f631'
         instance_type='t2.micro'
     )
@@ -122,7 +123,8 @@ So far, we've only used terraformpy anonymously, but the returned instances of t
 .. code-block:: python
 
     ami = Data(
-        'aws_ami', 'ecs_ami',
+        'aws_ami',
+        'ecs_ami',
         most_recent=True,
         filter=[
             dict(name='name', values=['\*amazon-ecs-optimized']),
@@ -131,7 +133,8 @@ So far, we've only used terraformpy anonymously, but the returned instances of t
     )
 
     Resource(
-        'aws_instance', 'example',
+        'aws_instance',
+        'example',
         ami=ami.id,
         instance_type='m4.xlarge'
     )
@@ -278,7 +281,8 @@ Next create the file ``configs/shared/instances.py``:
     from terraformpy import Resource
 
     Resource(
-        'aws_instance', 'example',
+        'aws_instance',
+        'example',
         ami=ami.id,
         prod_variant=dict(
             instance_type='m4.xlarge'
@@ -304,7 +308,8 @@ Since the import of the instances file happens inside of the Variant context the
     from terraformpy import Resource
 
     Resource(
-        'aws_instance', 'example',
+        'aws_instance',
+        'example',
         ami=ami.id,
         instance_type='t2.medium'
     )
@@ -342,7 +347,8 @@ To help with this situation a function named ``relative_file`` inside of the ``t
     from terraformpy.helpers import relative_file
 
     Resource(
-        'aws_iam_role', 'role_name',
+        'aws_iam_role',
+        'role_name',
         name='role-name',
         assume_role_policy=relative_file('role_policy.json')
     )
@@ -361,18 +367,12 @@ When creating ``aws_security_group_rule`` ``Resource`` objects you cannot pass `
 .. code-block:: python
 
     sg = Resource(
-        'aws_security_group_rule', 'my_rule',
+        'aws_security_group_rule',
+        'my_rule',
         _values=dict(self=True),
         vpc_id=vpc.id,
         ...
     )
 
-Release Steps
-=================
-1. Create an issue, check out a branch, and make your code changes.
-2. Push to run CircleCI tests.
-3. Create Pull Request to Master including VERSION bump.
-4. Merge PR after Approval.
-5. Add tag like v1.0.0 that matches new version and push.
 
 .. _`Configuring a Terraform Backend`: https://www.terraform.io/docs/configuration/terraform.html#configuring-a-terraform-backend

@@ -15,3 +15,4 @@ Table of contents
    README
    CHANGELOG
    CONTRIBUTING
+   api/modules

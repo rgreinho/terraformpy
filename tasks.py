@@ -21,6 +21,12 @@ def clean_repo(c):
 
 
 @task
+def docs(c):
+    """Build the documentation."""
+    c.run("python setup.py build_sphinx")
+
+
+@task
 def nox(c, s=""):
     """Wrapper for the nox tasks (`inv nox list` for details)."""
     if not s:
